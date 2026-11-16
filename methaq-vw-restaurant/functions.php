@@ -25,6 +25,13 @@ function methaq_vw_restaurant_enqueue_styles()
         ['vw-restaurant-lite-parent'],
         wp_get_theme()->get('Version')
     );
+
+    wp_enqueue_style(
+        'methaq-vw-restaurant-rtl',
+        get_stylesheet_directory_uri() . '/rtl.css',
+        ['methaq-vw-restaurant'],
+        wp_get_theme()->get('Version')
+    );
 }
 add_action('wp_enqueue_scripts', 'methaq_vw_restaurant_enqueue_styles', 20);
 
