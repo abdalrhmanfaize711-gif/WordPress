@@ -77,7 +77,7 @@ final class Methaq_Restaurant_Plugin
                 // السلطات
                 'السلطات|سلطة طازجة|خضروات موسمية مع صلصة المطعم الخاصة.|900|https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80',
                 'السلطات|فتوش|خضروات طازجة مع الخبز المحمّص ودبس الرمان.|1000|https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80',
-                'السلطات|سلطة سيزر بالدجاج|خس طازج وقطع دجاج وصوص سيزر وجبن.|1600|https://images.unsplash.com/photo- salad?auto=format&fit=crop&w=900&q=80',
+                'السلطات|سلطة سيزر بالدجاج|خس طازج وقطع دجاج وصوص سيزر وجبن.|1600|https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80',
                 // المشروبات
                 'المشروبات|عصير الليمون والنعناع|مشروب منعش محضّر عند الطلب.|700|https://images.unsplash.com/photo-1513558161293-cfaf765edfd4?auto=format&fit=crop&w=900&q=80',
                 'المشروبات|عصير البرتقال الطازج|برتقال طازج يعصر عند الطلب.|800|https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=900&q=80',
