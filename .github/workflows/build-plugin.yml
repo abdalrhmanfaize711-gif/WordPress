@@ -1,0 +1,30 @@
+name: Build and validate Methaq plugin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: zip, unzip
+      - name: Check plugin PHP syntax
+        run: php -l methaq-restaurant/methaq-restaurant.php
+      - name: Build installation ZIP
+        run: sh scripts/package-plugin.sh
+      - name: Upload installable plugin
+        uses: actions/upload-artifact@v4
+        with:
+          name: methaq-restaurant-plugin
+          path: dist/methaq-restaurant.zip
+          if-no-files-found: error
+          retention-days: 14
