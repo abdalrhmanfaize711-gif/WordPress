@@ -6,47 +6,52 @@
 - Strapi v4 with its REST API enabled.
 
 ## 2. Install the plugin once
-1. Download the \`methaq-restaurant.zip\` package.
+1. Download the `methaq-restaurant.zip` package.
 2. In WordPress, open **Plugins → Add New → Upload Plugin**.
 3. Upload the ZIP, select **Install Now**, then **Activate**.
-4. Open **Settings → Methaq Restaurant**.
-5. Enter the Strapi base URL, optional read-only API token, cache lifetime and currency label.
-6. Create a WordPress page containing \`[restaurant_home]\` and set it as the static homepage.
+4. The plugin automatically creates the Homepage, Menu, About and Contact pages. It sets its generated homepage as the front page only when the site has no front page selected already.
+5. Open **Settings → Methaq Restaurant** to connect Strapi.
 
-No manual PHP editing or separate frontend installation is required.
+Before connecting Strapi, the homepage shows a clearly marked preview with sample content so you can see the interface immediately. After you configure Strapi, your published restaurant data replaces the demo content.
+
+No manual PHP editing, shortcode insertion or manual page creation is required. The plugin includes these shortcodes in its generated pages:
+- `[restaurant_home]`
+- `[restaurant_menu]`
+- `[restaurant_info]`
+- `[restaurant_contact]`
 
 ## 3. Strapi content types
 Create and publish the following content types. The API IDs and field names must match exactly.
 
-### Restaurant — Single Type, API ID \`restaurant\`
-- \`name\` — Text (required)
-- \`description\` — Long text
-- \`about\` — Long text
-- \`phone\` — Text
-- \`address\` — Text
-- \`openingHours\` — Text
-- \`image\` — Single media
+### Restaurant — Single Type, API ID `restaurant`
+- `name` — Text (required)
+- `description` — Long text
+- `about` — Long text
+- `phone` — Text
+- `address` — Text
+- `openingHours` — Text
+- `image` — Single media
 
-### Category — Collection Type, API ID \`category\`
-- \`name\` — Text (required)
-- \`slug\` — UID from \`name\`
-- \`sortOrder\` — Integer
+### Category — Collection Type, API ID `category`
+- `name` — Text (required)
+- `slug` — UID from `name`
+- `sortOrder` — Integer
 
-### Menu Item — Collection Type, API ID \`menu-item\`
-- \`name\` — Text (required)
-- \`description\` — Long text
-- \`price\` — Decimal
-- \`image\` — Single media
-- \`isAvailable\` — Boolean
-- \`sortOrder\` — Integer
-- \`category\` — Many-to-one relation to Category
+### Menu Item — Collection Type, API ID `menu-item`
+- `name` — Text (required)
+- `description` — Long text
+- `price` — Decimal
+- `image` — Single media
+- `isAvailable` — Boolean
+- `sortOrder` — Integer
+- `category` — Many-to-one relation to Category
 
 The plugin uses these Strapi v4 REST endpoints:
-- \`GET /api/restaurant?populate[0]=image\`
-- \`GET /api/categories?sort=sortOrder:asc\`
-- \`GET /api/menu-items?populate[0]=image&populate[1]=category&sort=sortOrder:asc\`
+- `GET /api/restaurant?populate[0]=image`
+- `GET /api/categories?sort=sortOrder:asc`
+- `GET /api/menu-items?populate[0]=image&populate[1]=category&sort=sortOrder:asc`
 
-Only published menu items returned by Strapi are displayed. If \`isAvailable\` is false, the item is hidden.
+Only published menu items returned by Strapi are displayed. If `isAvailable` is false, the item is hidden.
 
 ## 4. API token and permissions
 1. In Strapi Admin, create an API Token with **Read-only** permissions.
@@ -55,18 +60,12 @@ Only published menu items returned by Strapi are displayed. If \`isAvailable\` i
 4. The token is sent only from the WordPress server to Strapi. It is not included in page HTML or frontend JavaScript.
 5. The token field appears blank after saving. Leaving it blank preserves the saved token; entering a new value replaces it.
 
-## 5. Shortcodes
-- \`[restaurant_home]\` — complete homepage.
-- \`[restaurant_menu]\` — menu and category filters.
-- \`[restaurant_info]\` — restaurant description.
-- \`[restaurant_contact]\` — phone, address and opening hours.
-
-## 6. Cache and troubleshooting
+## 5. Cache and troubleshooting
 - Cache lifetime is configurable from 0 to 86400 seconds. Use 0 to disable caching.
-- Enter the Strapi base URL only, such as \`https://cms.example.com\`; do not append \`/api\`.
+- Enter the Strapi base URL only, such as `https://cms.example.com`; do not append `/api`.
 - Confirm content is published and API read permissions are enabled.
 - WordPress hosting must be able to reach the Strapi server over HTTPS.
 - The URL fields and relation names in your Strapi project must match the schema above.
 
-## 7. Scope
-This is a restaurant presentation website. It does not implement online ordering, payments, reservations or delivery. Content is managed in Strapi. A live API test requires a running Strapi instance and valid credentials; repository checks do not replace that integration test.
+## 6. Scope
+This is a restaurant presentation website. It does not implement online ordering, payments, reservations or delivery. Content is managed in Strapi. A live API test requires a running Strapi instance and valid credentials.
