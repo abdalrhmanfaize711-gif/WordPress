@@ -1,32 +1,28 @@
 # Methaq Restaurant — WordPress Plugin + Strapi
 
-A small Arabic RTL restaurant website delivered as an installable WordPress plugin. Restaurant content (menu, categories, description, contact details and media) is managed in Strapi.
+An install-once WordPress plugin for a responsive Arabic RTL restaurant website. Restaurant details, menu categories, menu items and images are managed in Strapi.
+
+## Install
+Upload \`methaq-restaurant.zip\` through **WordPress → Plugins → Add New → Upload Plugin**, install and activate it. Then open **Settings → Methaq Restaurant** to connect Strapi and add \`[restaurant_home]\` to the homepage.
+
+No manual PHP editing or separate frontend setup is required. PHP is included inside the plugin because WordPress uses it to load plugins.
 
 ## Repository layout
-- `methaq-restaurant/` — complete WordPress plugin source.
-- `docs/SETUP.md` — installation, Strapi content types, API token, permissions and troubleshooting.
-- `docs/strapi-sample-data.json` — sample restaurant/menu data.
-- `scripts/package-plugin.sh` — builds and validates the installable plugin ZIP.
+- \`methaq-restaurant/\` — complete plugin source.
+- \`docs/SETUP.md\` — Strapi schema and setup guide.
+- \`scripts/package-plugin.sh\` — PHP syntax check and ZIP packaging.
 
-## Build the installable ZIP
-Run from a machine with `zip` and `unzip` installed:
+## Build package
+Run:
 
-```sh
+\`\`\`sh
 sh scripts/package-plugin.sh
-```
+\`\`\`
 
-The output is `dist/methaq-restaurant.zip`. Upload it in WordPress under **Plugins → Add New → Upload Plugin**.
+The package is generated at \`dist/methaq-restaurant.zip\`.
 
-## Configure
-After activation, open **Settings → Methaq Restaurant**, enter the Strapi base URL and a read-only API token, then create a WordPress page containing:
+## Shortcodes
+\`[restaurant_home]\`, \`[restaurant_menu]\`, \`[restaurant_info]\`, \`[restaurant_contact]\`.
 
-```text
-[restaurant_home]
-```
-
-Set that page as the static homepage. Individual shortcodes: `[restaurant_menu]`, `[restaurant_info]`, `[restaurant_contact]`.
-
-See [docs/SETUP.md](docs/SETUP.md) for the full setup guide and expected Strapi v4 schema.
-
-## Validation status
-Source and documentation are committed. The packaging script includes an archive integrity check. This environment did not run PHP lint or a live WordPress/Strapi integration test; configure a Strapi instance and run the checks in the setup guide before production use.
+## Compatibility
+The response adapter targets Strapi v4 REST responses (\`data\` / \`attributes\`). A live integration test needs a running Strapi instance and valid credentials.
