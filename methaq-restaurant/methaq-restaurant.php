@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Methaq Restaurant — Strapi Connector
  * Description: Responsive Arabic RTL restaurant website powered by Strapi CMS.
- * Version: 1.0.2
+ * Version: 1.0.3
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Methaq
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('METHAQ_RESTAURANT_VERSION', '1.0.2');
+define('METHAQ_RESTAURANT_VERSION', '1.0.3');
 define('METHAQ_RESTAURANT_URL', plugin_dir_url(__FILE__));
 
 final class Methaq_Restaurant_Plugin
@@ -26,6 +26,7 @@ final class Methaq_Restaurant_Plugin
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_init', [$this, 'ensure_pages_exist']);
+        add_action('after_switch_theme', [$this, 'ensure_pages_exist']);
         add_action('admin_notices', [$this, 'admin_notice']);
         add_action('wp_enqueue_scripts', [$this, 'assets']);
         register_activation_hook(__FILE__, [$this, 'ensure_pages_exist']);
@@ -43,6 +44,7 @@ final class Methaq_Restaurant_Plugin
     public function ensure_pages_exist()
     {
         if (get_option('methaq_pages_created') === 'yes') {
+            $this->ensure_navigation((array) get_option('methaq_page_ids', []));
             return;
         }
 
@@ -82,7 +84,61 @@ final class Methaq_Restaurant_Plugin
             }
             update_option('methaq_page_ids', $page_ids);
             update_option('methaq_pages_created', 'yes');
+            $this->ensure_navigation($page_ids);
         }
+    }
+
+    /**
+     * Create a WordPress navigation menu for the restaurant pages.
+     * Preserve any menu the site owner has already assigned.
+     */
+    private function ensure_navigation($page_ids)
+    {
+        if (get_stylesheet() !== 'methaq-vw-restaurant' || !function_exists('get_registered_nav_menus')) {
+            return;
+        }
+
+        $registered = get_registered_nav_menus();
+        $assigned = get_nav_menu_locations();
+        foreach ($registered as $location => $description) {
+            if (!empty($assigned[$location])) {
+                return;
+            }
+        }
+
+        if (empty($registered) || !function_exists('wp_create_nav_menu')) {
+            return;
+        }
+
+        $menu = wp_get_nav_menu_object('مذاق - القائمة الرئيسية');
+        $menu_id = $menu ? (int) $menu->term_id : wp_create_nav_menu('مذاق - القائمة الرئيسية');
+        if (is_wp_error($menu_id) || !$menu_id) {
+            return;
+        }
+
+        $labels = [
+            'home' => 'الرئيسية',
+            'menu' => 'قائمة الطعام',
+            'about' => 'عن المطعم',
+            'contact' => 'تواصل معنا',
+        ];
+
+        foreach ($labels as $key => $label) {
+            if (empty($page_ids[$key])) {
+                continue;
+            }
+            wp_update_nav_menu_item($menu_id, 0, [
+                'menu-item-title' => $label,
+                'menu-item-object' => 'page',
+                'menu-item-object-id' => (int) $page_ids[$key],
+                'menu-item-type' => 'post_type',
+                'menu-item-status' => 'publish',
+            ]);
+        }
+
+        $location = isset($registered['primary']) ? 'primary' : key($registered);
+        $assigned[$location] = $menu_id;
+        set_theme_mod('nav_menu_locations', $assigned);
     }
 
     public function admin_notice()
@@ -378,26 +434,13 @@ final class Methaq_Restaurant_Plugin
         $restaurant = $this->restaurant();
         $name = isset($restaurant['name']) ? $restaurant['name'] : get_bloginfo('name');
         $description = isset($restaurant['description']) ? $restaurant['description'] : 'أطباق طازجة ونكهات تجمعنا.';
-        $logo = $this->image_url($restaurant);
 
         ob_start();
         ?>
-        <main class="methaq-site" dir="rtl" lang="ar">
-            <header class="methaq-nav">
-                <a href="#methaq-top" class="methaq-brand">
-                    <?php if ($logo !== '') : ?><img src="<?php echo esc_url($logo); ?>" alt=""><?php endif; ?>
-                    <span><?php echo esc_html($name); ?></span>
-                </a>
-                <nav aria-label="القائمة الرئيسية">
-                    <a href="#methaq-menu">قائمة الطعام</a>
-                    <a href="#methaq-about">عن المطعم</a>
-                    <a href="#methaq-contact">تواصل معنا</a>
-                </nav>
-            </header>
-
+        <div class="methaq-site" dir="rtl" lang="ar">
             <section class="methaq-hero" id="methaq-top">
-                <div>
-                    <span class="methaq-kicker">أهلاً وسهلاً بكم</span>
+                <div class="methaq-hero-content">
+                    <span class="methaq-kicker">أهلاً وسهلاً بكم في مذاق</span>
                     <h1><?php echo esc_html($name); ?></h1>
                     <p><?php echo esc_html($description); ?></p>
                     <a class="methaq-button" href="#methaq-menu">اكتشف قائمتنا</a>
@@ -407,16 +450,13 @@ final class Methaq_Restaurant_Plugin
             <?php echo $this->menu_shortcode(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
             <section class="methaq-about" id="methaq-about">
-                <h2>حكايتنا</h2>
+                <span class="methaq-kicker">حكايتنا</span>
+                <h2>نكهات تجمعنا</h2>
                 <p><?php echo esc_html(isset($restaurant['about']) ? $restaurant['about'] : $description); ?></p>
             </section>
 
             <?php echo $this->contact_shortcode(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-
-            <footer class="methaq-footer">
-                <?php echo esc_html($name); ?> © <?php echo esc_html(wp_date('Y')); ?>
-            </footer>
-        </main>
+        </div>
         <?php
         return ob_get_clean();
     }
