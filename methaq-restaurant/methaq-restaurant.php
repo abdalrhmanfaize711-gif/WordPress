@@ -388,7 +388,9 @@ final class Methaq_Restaurant_Plugin
         ob_start();
         ?>
         <div class="methaq-site" dir="rtl" lang="ar">
-            <section class="methaq-hero" id="methaq-top" style="--methaq-hero-image:url('<?php echo esc_url($settings['hero_image']); ?>')">
+            <section class="methaq-hero" id="methaq-top">
+                <div class="methaq-hero-media"><img src="<?php echo esc_url($settings['hero_image']); ?>" alt="" fetchpriority="high"></div>
+                <div class="methaq-hero-shade"></div>
                 <div class="methaq-hero-content">
                     <span class="methaq-kicker"><?php echo esc_html($settings['tagline']); ?></span>
                     <h1><?php echo esc_html($settings['restaurant_name']); ?></h1>
