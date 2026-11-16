@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Methaq Restaurant — Strapi Connector
  * Description: Responsive Arabic RTL restaurant website powered by Strapi CMS.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: Methaq
@@ -14,7 +14,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('METHAQ_RESTAURANT_VERSION', '1.0.1');
+define('METHAQ_RESTAURANT_VERSION', '1.0.2');
 define('METHAQ_RESTAURANT_URL', plugin_dir_url(__FILE__));
 
 final class Methaq_Restaurant_Plugin
