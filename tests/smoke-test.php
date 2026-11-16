@@ -21,6 +21,7 @@ class WP_Error
 
 function is_wp_error($value) { return $value instanceof WP_Error; }
 function add_action(...$args) {}
+function register_activation_hook(...$args) {}
 function add_shortcode(...$args) {}
 function register_setting(...$args) {}
 function add_options_page(...$args) {}
