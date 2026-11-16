@@ -108,14 +108,13 @@ body.home .page-header {
 .methaq-site *::before,
 .methaq-site *::after { box-sizing: border-box; }
 .methaq-hero {
+    isolation: isolate;
     min-height: 570px;
     padding: 90px max(7%, calc((100% - 1160px) / 2));
     display: flex;
     align-items: center;
     color: #fff;
-    background:
-        linear-gradient(90deg, rgba(19, 34, 25, .86), rgba(19, 34, 25, .26)),
-        url("https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1900&q=85") center/cover;
+    background: #26392d;
 }
 .methaq-hero-content { max-width: 660px; }
 .methaq-hero .methaq-kicker { color: #f4c997; font-weight: 800; }
