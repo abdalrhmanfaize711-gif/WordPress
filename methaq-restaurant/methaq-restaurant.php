@@ -25,12 +25,84 @@ final class Methaq_Restaurant_Plugin
     {
         add_action('admin_menu', [$this, 'admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
+        add_action('admin_init', [$this, 'ensure_pages_exist']);
+        add_action('admin_notices', [$this, 'admin_notice']);
         add_action('wp_enqueue_scripts', [$this, 'assets']);
+        register_activation_hook(__FILE__, [$this, 'ensure_pages_exist']);
 
         add_shortcode('restaurant_home', [$this, 'home_shortcode']);
         add_shortcode('restaurant_menu', [$this, 'menu_shortcode']);
         add_shortcode('restaurant_info', [$this, 'info_shortcode']);
         add_shortcode('restaurant_contact', [$this, 'contact_shortcode']);
+    }
+
+    /**
+     * Create the restaurant pages automatically so activation produces a visible site.
+     * Existing pages and an already selected homepage are never overwritten.
+     */
+    public function ensure_pages_exist()
+    {
+        if (get_option('methaq_pages_created') === 'yes') {
+            return;
+        }
+
+        $pages = [
+            'home' => ['title' => 'الرئيسية - مذاق', 'slug' => 'restaurant-home', 'content' => '[restaurant_home]'],
+            'menu' => ['title' => 'قائمة الطعام', 'slug' => 'restaurant-menu', 'content' => '[restaurant_menu]'],
+            'about' => ['title' => 'عن المطعم', 'slug' => 'restaurant-about', 'content' => '[restaurant_info]'],
+            'contact' => ['title' => 'تواصل معنا', 'slug' => 'restaurant-contact', 'content' => '[restaurant_contact]'],
+        ];
+
+        $page_ids = [];
+        foreach ($pages as $key => $page) {
+            $existing = get_page_by_path($page['slug'], OBJECT, 'page');
+            if ($existing) {
+                $page_ids[$key] = (int) $existing->ID;
+                continue;
+            }
+
+            $created = wp_insert_post([
+                'post_type' => 'page',
+                'post_status' => 'publish',
+                'post_title' => $page['title'],
+                'post_name' => $page['slug'],
+                'post_content' => $page['content'],
+            ], true);
+
+            if (!is_wp_error($created) && $created) {
+                $page_ids[$key] = (int) $created;
+            }
+        }
+
+        if (!empty($page_ids['home'])) {
+            // Only assign a homepage when the site owner has not already chosen one.
+            if (!(int) get_option('page_on_front')) {
+                update_option('show_on_front', 'page');
+                update_option('page_on_front', $page_ids['home']);
+            }
+            update_option('methaq_page_ids', $page_ids);
+            update_option('methaq_pages_created', 'yes');
+        }
+    }
+
+    public function admin_notice()
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $settings = $this->settings();
+        if ($settings['api_url'] !== '') {
+            return;
+        }
+
+        $home_id = (int) get_option('page_on_front');
+        $home_url = $home_id ? get_permalink($home_id) : '';
+        echo '<div class="notice notice-info"><p><strong>Methaq Restaurant:</strong> تم تجهيز صفحات المطعم تلقائيًا. ';
+        if ($home_url) {
+            echo '<a href="' . esc_url($home_url) . '" target="_blank" rel="noopener">معاينة واجهة المطعم</a>. ';
+        }
+        echo 'أدخل بيانات Strapi من <a href="' . esc_url(admin_url('options-general.php?page=methaq-restaurant')) . '">إعدادات الإضافة</a> لاستبدال بيانات المعاينة ببيانات مطعمك.</p></div>';
     }
 
     private function defaults()
@@ -241,6 +313,18 @@ final class Methaq_Restaurant_Plugin
         if (isset($item['attributes']) || isset($item['name'])) {
             return $this->attrs($item);
         }
+
+        // Show a complete preview immediately after installation, before Strapi is connected.
+        if ($this->settings()['api_url'] === '') {
+            return [
+                'name' => 'مذاق',
+                'description' => 'نكهات طازجة وتجربة طعام تجمع العائلة والأصدقاء.',
+                'about' => 'في مذاق نهتم بالتفاصيل؛ من اختيار المكونات الطازجة إلى تقديم أطباق محضّرة بعناية.',
+                'phone' => '',
+                'address' => 'أضف عنوان مطعمك من Strapi',
+                'openingHours' => 'أضف ساعات العمل من Strapi',
+            ];
+        }
         return [];
     }
 
@@ -339,9 +423,23 @@ final class Methaq_Restaurant_Plugin
 
     public function menu_shortcode()
     {
-        $categories = $this->data('categories?sort=sortOrder%3Aasc');
+        $demo_mode = ($this->settings()['api_url'] === '');
+        $categories = $demo_mode ? [
+            ['id' => 1, 'attributes' => ['name' => 'الأطباق الرئيسية', 'slug' => 'main-dishes']],
+            ['id' => 2, 'attributes' => ['name' => 'المقبلات', 'slug' => 'appetizers']],
+            ['id' => 3, 'attributes' => ['name' => 'المشروبات', 'slug' => 'drinks']],
+        ] : $this->data('categories?sort=sortOrder%3Aasc');
+
         // Explicitly populate the image and category relation (standard Strapi v4 syntax).
-        $items = $this->data('menu-items?populate%5B0%5D=image&populate%5B1%5D=category&sort=sortOrder%3Aasc');
+        $items = $demo_mode ? [
+            ['id' => 1, 'attributes' => ['name' => 'كبسة الدجاج', 'description' => 'أرز متبّل مع دجاج محضّر بعناية.', 'price' => 2500, 'isAvailable' => true, 'category' => ['data' => ['id' => 1, 'attributes' => ['slug' => 'main-dishes']]], 'image' => ['data' => ['attributes' => ['url' => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=900&q=80']]]]],
+            ['id' => 2, 'attributes' => ['name' => 'سلطة طازجة', 'description' => 'خضروات موسمية مع صلصة المطعم الخاصة.', 'price' => 900, 'isAvailable' => true, 'category' => ['data' => ['id' => 2, 'attributes' => ['slug' => 'appetizers']]], 'image' => ['data' => ['attributes' => ['url' => 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80']]]]],
+            ['id' => 3, 'attributes' => ['name' => 'عصير الليمون والنعناع', 'description' => 'مشروب منعش محضّر عند الطلب.', 'price' => 700, 'isAvailable' => true, 'category' => ['data' => ['id' => 3, 'attributes' => ['slug' => 'drinks']]], 'image' => ['data' => ['attributes' => ['url' => 'https://images.unsplash.com/photo-1513558161293-cw4e3f7a3d2a?auto=format&fit=crop&w=900&q=80']]]]],
+        ] : $this->data('menu-items?populate%5B0%5D=image&populate%5B1%5D=category&sort=sortOrder%3Aasc');
+
+        $visible_items = array_values(array_filter($items, function ($item) {
+            return $this->is_available($this->attrs($item));
+        }));
         $currency = $this->settings()['currency'];
 
         ob_start();
@@ -350,10 +448,13 @@ final class Methaq_Restaurant_Plugin
             <div class="methaq-section-head">
                 <span class="methaq-kicker">مختارة بعناية</span>
                 <h2>قائمة الطعام</h2>
+                <?php if ($demo_mode) : ?>
+                    <p class="methaq-demo-label">معاينة تجريبية — ستظهر بيانات مطعمك بعد ربط Strapi</p>
+                <?php endif; ?>
             </div>
 
-            <?php if (empty($items)) : ?>
-                <p class="methaq-empty">لا توجد أصناف منشورة حاليًا. يرجى مراجعة إعدادات Strapi.</p>
+            <?php if (empty($visible_items)) : ?>
+                <p class="methaq-empty">لا توجد أصناف متاحة حاليًا. تحقق من نشر الأصناف وحالة التوفر في Strapi.</p>
             <?php else : ?>
                 <div class="methaq-filters" aria-label="تصفية الأصناف">
                     <button type="button" class="is-active" data-filter="all">الكل</button>
@@ -367,11 +468,8 @@ final class Methaq_Restaurant_Plugin
                 </div>
 
                 <div class="methaq-grid">
-                    <?php foreach ($items as $item) :
+                    <?php foreach ($visible_items as $item) :
                         $attributes = $this->attrs($item);
-                        if (!$this->is_available($attributes)) {
-                            continue;
-                        }
                         $category_slug = $this->category_slug($attributes);
                         $image = $this->image_url($attributes);
                         $item_name = isset($attributes['name']) ? $attributes['name'] : '';
