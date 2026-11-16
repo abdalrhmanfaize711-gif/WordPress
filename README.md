@@ -1,6 +1,6 @@
 # Methaq Restaurant — WordPress Display Website
 
-A simple Arabic RTL restaurant presentation website. It displays the restaurant story, food menu, prices, photos and contact details. **It does not use Strapi, an external CMS, external API, online ordering or payment service.**
+A simple Arabic RTL restaurant presentation website. It displays the restaurant story, food menu, prices, photos and contact details. **It uses no external CMS or API and has no online ordering or payment service.**
 
 ## How content is managed
 All restaurant information is saved locally in the WordPress database through the **موقع المطعم** admin menu. From there you can edit:
