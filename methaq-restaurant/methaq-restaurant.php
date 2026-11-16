@@ -170,7 +170,7 @@ final class Methaq_Restaurant_Plugin
         ?>
         <div class="wrap">
             <h1>إعدادات موقع المطعم — مذاق</h1>
-            <p>هذه صفحة عرض فقط. عدّل معلومات المطعم والأصناف من هنا؛ لا يحتاج الموقع إلى Strapi أو أي خدمة خارجية.</p>
+            <p>هذه صفحة إدارة محتوى العرض. عدّل معلومات المطعم والأصناف من هنا؛ تُحفظ البيانات مباشرة في WordPress.</p>
             <form method="post" action="options.php">
                 <?php settings_fields('methaq_restaurant_display_group'); ?>
                 <h2>معلومات المطعم</h2>
