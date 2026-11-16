@@ -1,0 +1,20 @@
+/*
+ * RTL refinements for the Methaq Restaurant child theme.
+ */
+body,
+.site,
+.site-content,
+.entry-content,
+.methaq-theme-front-content {
+    direction: rtl;
+    text-align: right;
+}
+.methaq-hero,
+.methaq-site,
+.methaq-contact {
+    direction: rtl;
+    text-align: right;
+}
+.methaq-filters {
+    direction: rtl;
+}
