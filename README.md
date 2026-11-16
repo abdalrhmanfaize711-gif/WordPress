@@ -1,36 +1,41 @@
-# Methaq Restaurant — WordPress Theme + Strapi Plugin
+# Methaq Restaurant — WordPress Display Website
 
-The website presentation is now based on a ready-made WordPress restaurant theme, customized for the Arabic brand **مذاق**. Strapi remains the source of restaurant, category, menu and image data.
+A simple Arabic RTL restaurant presentation website. It displays the restaurant story, food menu, prices, photos and contact details. **It does not use Strapi, an external CMS, external API, online ordering or payment service.**
 
-## Theme base
-The customized child theme is based on **VW Restaurant Lite**, a free theme listed in the official WordPress.org directory. The base theme supports RTL and responsive layouts. [View VW Restaurant Lite](https://wordpress.org/themes/vw-restaurant-lite/).
+## How content is managed
+All restaurant information is saved locally in the WordPress database through the **موقع المطعم** admin menu. From there you can edit:
+- Restaurant name, tagline, description and about text.
+- Hero image.
+- Phone, address, opening hours and currency.
+- Menu categories, dish names, descriptions, prices and optional image URLs.
 
-The `methaq-vw-restaurant/` child theme customizes colors, Arabic RTL presentation, the homepage layout and responsive restaurant sections while retaining the parent theme's header/footer framework.
+Each menu item is entered on its own line with this format:
 
-## Install in this order
-1. In WordPress, install and activate **VW Restaurant Lite** from Appearance → Themes → Add New.
-2. Upload and activate `methaq-vw-restaurant.zip` (the Methaq child theme).
-3. Upload and activate `methaq-restaurant.zip` (the Strapi connector plugin).
-4. The plugin creates the Home, Menu, About and Contact pages. It adds those pages to the theme's primary navigation when no menu is already assigned.
-5. Before Strapi is connected, the homepage shows a clearly marked demo preview. Configure Strapi in Settings → Methaq Restaurant to load the actual content.
+```text
+Category | Dish name | Description | Price | Image URL
+```
 
-WordPress requires themes and plugins to be installed separately. No manual PHP editing or shortcode insertion is required.
+The image URL is optional. Default sample dishes are included so the site is visible immediately.
 
-## Repository layout
-- `methaq-vw-restaurant/` — customized child theme.
-- `methaq-restaurant/` — Strapi connector plugin.
-- `docs/SETUP.md` — installation and Strapi schema guide.
-- `tests/smoke-test.php` — plugin behavior tests using WordPress API stubs.
-- `scripts/package-plugin.sh` — build/validate plugin ZIP.
-- `scripts/package-theme.sh` — build/validate child theme ZIP.
+## Theme and plugin
+- **Methaq Restaurant plugin** — creates the four pages and menu, stores local restaurant data and renders the restaurant sections.
+- **Methaq Restaurant child theme** — customized from the ready-made VW Restaurant Lite theme. It controls the page presentation, brand colors and RTL refinements.
 
-## Build packages
+WordPress installs themes and plugins separately.
+
+## Installation
+1. Install the free parent theme **VW Restaurant Lite** from Appearance → Themes → Add New.
+2. Upload and activate `methaq-vw-restaurant.zip` from Appearance → Themes → Add New → Upload Theme.
+3. Upload and activate `methaq-restaurant.zip` from Plugins → Add New → Upload Plugin.
+4. Open the public homepage. The plugin creates Home, Menu, About and Contact pages automatically.
+5. Open **موقع المطعم** in the WordPress dashboard to update the sample content with the real restaurant details.
+
+No manual PHP editing, external CMS account, server URL, API token or shortcode entry is required.
+
+## Build
 ```sh
 sh scripts/package-plugin.sh
 sh scripts/package-theme.sh
 ```
 
-The output files are created in `dist/`.
-
-## Strapi compatibility
-The connector currently targets Strapi v4 REST responses (`data` / `attributes`). A real API integration check requires a running Strapi instance and valid credentials.
+The ZIP files are written to `dist/`.
