@@ -19,6 +19,8 @@ jobs:
           tools: zip, unzip
       - name: Check plugin PHP syntax
         run: php -l methaq-restaurant/methaq-restaurant.php
+      - name: Run plugin smoke tests
+        run: php tests/smoke-test.php
       - name: Build installation ZIP
         run: sh scripts/package-plugin.sh
       - name: Upload installable plugin
