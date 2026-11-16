@@ -25,6 +25,13 @@ function is_wp_error($value) { return $value instanceof WP_Error; }
 function add_action(...$args) {}
 function register_activation_hook(...$args) {}
 function add_shortcode(...$args) {}
+function get_stylesheet() { return 'methaq-vw-restaurant'; }
+function get_registered_nav_menus() { return ['primary' => 'Primary']; }
+function get_nav_menu_locations() { return $GLOBALS['mock_theme_mod']['nav_menu_locations'] ?? []; }
+function wp_get_nav_menu_object($name) { return null; }
+function wp_create_nav_menu($name) { $GLOBALS['mock_created_menu'] = $name; return 900; }
+function wp_update_nav_menu_item($menu_id, $item_id, $args) { $GLOBALS['mock_menu_items'][] = $args; return count($GLOBALS['mock_menu_items']); }
+function set_theme_mod($key, $value) { $GLOBALS['mock_theme_mod'][$key] = $value; }
 function register_setting(...$args) {}
 function add_options_page(...$args) {}
 function plugin_dir_url($file) { return 'https://site.example.test/wp-content/plugins/methaq-restaurant/'; }
@@ -156,6 +163,12 @@ if ((int) get_option('page_on_front') !== 101) {
 }
 if (strpos($GLOBALS['mock_created_pages'][0]['post']['post_content'], '[restaurant_home]') === false) {
     throw new RuntimeException('The generated homepage does not contain its shortcode.');
+}
+if (count($GLOBALS['mock_menu_items']) !== 4) {
+    throw new RuntimeException('The plugin did not generate four primary navigation items.');
+}
+if ((int) ($GLOBALS['mock_theme_mod']['nav_menu_locations']['primary'] ?? 0) !== 900) {
+    throw new RuntimeException('The generated restaurant navigation was not assigned to the primary location.');
 }
 
 // Verify the pre-connection preview is visible before Strapi is configured.
