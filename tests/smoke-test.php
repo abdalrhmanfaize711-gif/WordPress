@@ -1,5 +1,7 @@
 <?php
 define('ABSPATH', __DIR__ . '/');
+define('OBJECT', 'OBJECT');
+$GLOBALS['mock_created_pages'] = [];
 $GLOBALS['mock_options'] = [
     'methaq_restaurant_settings' => [
         'api_url' => 'https://cms.example.test',
@@ -28,6 +30,11 @@ function add_options_page(...$args) {}
 function plugin_dir_url($file) { return 'https://site.example.test/wp-content/plugins/methaq-restaurant/'; }
 function wp_parse_args($args, $defaults = []) { return array_merge($defaults, is_array($args) ? $args : []); }
 function get_option($key, $default = false) { return $GLOBALS['mock_options'][$key] ?? $default; }
+function update_option($key, $value) { $GLOBALS['mock_options'][$key] = $value; return true; }
+function get_page_by_path($path, $output = OBJECT, $post_type = 'page') { return null; }
+function wp_insert_post($postarr, $wp_error = false) { $id = 100 + count($GLOBALS['mock_created_pages']) + 1; $GLOBALS['mock_created_pages'][] = ['id' => $id, 'post' => $postarr]; return $id; }
+function get_permalink($post_id) { return 'https://site.example.test/?page_id=' . $post_id; }
+function admin_url($path = '') { return 'https://site.example.test/wp-admin/' . $path; }
 function get_transient($key) { return false; }
 function set_transient(...$args) {}
 function trailingslashit($value) { return rtrim($value, '/') . '/'; }
@@ -137,3 +144,25 @@ foreach ($GLOBALS['mock_requests'] as $request) {
 }
 
 echo "Smoke tests passed: homepage, Strapi data, availability filter, category relation, token preservation and token hiding.\n";
+
+
+// Verify that activation creates the four pages and selects a homepage only when none exists.
+$plugin->ensure_pages_exist();
+if (count($GLOBALS['mock_created_pages']) !== 4) {
+    throw new RuntimeException('The plugin did not create all four restaurant pages.');
+}
+if ((int) get_option('page_on_front') !== 101) {
+    throw new RuntimeException('The plugin did not set the generated homepage.');
+}
+if (strpos($GLOBALS['mock_created_pages'][0]['post']['post_content'], '[restaurant_home]') === false) {
+    throw new RuntimeException('The generated homepage does not contain its shortcode.');
+}
+
+// Verify the pre-connection preview is visible before Strapi is configured.
+$GLOBALS['mock_options']['methaq_restaurant_settings']['api_url'] = '';
+$preview = $plugin->home_shortcode();
+if (strpos($preview, 'معاينة تجريبية') === false || strpos($preview, 'كبسة الدجاج') === false) {
+    throw new RuntimeException('The pre-connection restaurant preview is not visible.');
+}
+
+echo "Page creation and pre-connection preview tests passed.\n";
