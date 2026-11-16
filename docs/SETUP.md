@@ -1,27 +1,33 @@
-# Methaq Restaurant — Installation & Strapi Setup
+# Methaq Restaurant — Theme, Plugin and Strapi Setup
 
-## 1. Requirements
-- WordPress 6.2 or later.
-- PHP 7.4 or later (WordPress runs PHP internally; you do not need to write PHP).
-- Strapi v4 with its REST API enabled.
+## 1. What is included?
+This solution uses two separate WordPress components:
+- **Methaq Restaurant theme** — a customized child theme based on the ready-made VW Restaurant Lite theme. It controls the website presentation, parent theme header/footer, RTL styling and visual design.
+- **Methaq Restaurant plugin** — connects WordPress to Strapi and supplies restaurant information, menu categories, menu items, images and contact data.
 
-## 2. Install the plugin once
-1. Download the `methaq-restaurant.zip` package.
-2. In WordPress, open **Plugins → Add New → Upload Plugin**.
-3. Upload the ZIP, select **Install Now**, then **Activate**.
-4. The plugin automatically creates the Homepage, Menu, About and Contact pages. It sets its generated homepage as the front page only when the site has no front page selected already.
-5. Open **Settings → Methaq Restaurant** to connect Strapi.
+WordPress treats themes and plugins as separate installation types, so install both. You do not need to edit PHP files.
 
-Before connecting Strapi, the homepage shows a clearly marked preview with sample content so you can see the interface immediately. After you configure Strapi, your published restaurant data replaces the demo content.
+## 2. Install the base theme
+1. In WordPress, open **Appearance → Themes → Add New**.
+2. Search for **VW Restaurant Lite**.
+3. Install and activate it once. It is a free theme from the official WordPress.org directory: https://wordpress.org/themes/vw-restaurant-lite/.
+4. The theme is responsive and lists RTL language support. Its free version may offer optional paid upgrades/support.
 
-No manual PHP editing, shortcode insertion or manual page creation is required. The plugin includes these shortcodes in its generated pages:
-- `[restaurant_home]`
-- `[restaurant_menu]`
-- `[restaurant_info]`
-- `[restaurant_contact]`
+## 3. Install the Methaq child theme
+1. Upload `methaq-vw-restaurant.zip` through **Appearance → Themes → Add New → Upload Theme**.
+2. Install and activate **Methaq Restaurant**.
+3. The child theme inherits the ready-made VW Restaurant Lite framework and applies the Methaq colors, Arabic RTL layout and custom homepage template. The parent theme must remain installed.
 
-## 3. Strapi content types
-Create and publish the following content types. The API IDs and field names must match exactly.
+## 4. Install the Strapi connector plugin
+1. Go to **Plugins → Add New → Upload Plugin**.
+2. Upload `methaq-restaurant.zip`, install and activate it.
+3. The plugin automatically creates Home, Menu, About and Contact pages. It sets its homepage as the front page only if the site does not already have a front page.
+4. Once the Methaq child theme is active, the plugin creates and assigns a restaurant navigation menu if no menu is already assigned to the theme's primary menu location.
+
+Before Strapi is connected, the homepage shows a clearly marked preview with sample content. After configuring Strapi, the published restaurant data replaces the demo content.
+
+## 5. Connect Strapi
+Open **Settings → Methaq Restaurant** and enter the Strapi base URL, optional read-only API token, cache lifetime and currency label.
 
 ### Restaurant — Single Type, API ID `restaurant`
 - `name` — Text (required)
@@ -46,26 +52,26 @@ Create and publish the following content types. The API IDs and field names must
 - `sortOrder` — Integer
 - `category` — Many-to-one relation to Category
 
-The plugin uses these Strapi v4 REST endpoints:
+The plugin requests these Strapi v4 endpoints:
 - `GET /api/restaurant?populate[0]=image`
 - `GET /api/categories?sort=sortOrder:asc`
 - `GET /api/menu-items?populate[0]=image&populate[1]=category&sort=sortOrder:asc`
 
-Only published menu items returned by Strapi are displayed. If `isAvailable` is false, the item is hidden.
+Only published menu items are returned by Strapi. Items with `isAvailable = false` are hidden.
 
-## 4. API token and permissions
+## 6. API token and security
 1. In Strapi Admin, create an API Token with **Read-only** permissions.
 2. Grant read access to Restaurant, Category and Menu Item.
-3. Copy the token into the WordPress settings page over HTTPS.
-4. The token is sent only from the WordPress server to Strapi. It is not included in page HTML or frontend JavaScript.
+3. Paste the token into the WordPress settings page over HTTPS.
+4. The token is sent only from the WordPress server to Strapi. It is not included in page HTML or browser JavaScript.
 5. The token field appears blank after saving. Leaving it blank preserves the saved token; entering a new value replaces it.
 
-## 5. Cache and troubleshooting
-- Cache lifetime is configurable from 0 to 86400 seconds. Use 0 to disable caching.
-- Enter the Strapi base URL only, such as `https://cms.example.com`; do not append `/api`.
-- Confirm content is published and API read permissions are enabled.
-- WordPress hosting must be able to reach the Strapi server over HTTPS.
-- The URL fields and relation names in your Strapi project must match the schema above.
+## 7. Cache and troubleshooting
+- Cache lifetime is configurable from 0 to 86400 seconds. Set to 0 to disable caching.
+- Enter only the Strapi base URL (for example, `https://cms.example.com`), without `/api`.
+- Ensure content is published and API read permissions are enabled.
+- WordPress hosting must be able to reach Strapi over HTTPS.
+- The connector expects Strapi v4 response shape (`data` / `attributes`). Strapi v5 will require a response adapter update.
 
-## 6. Scope
-This is a restaurant presentation website. It does not implement online ordering, payments, reservations or delivery. Content is managed in Strapi. A live API test requires a running Strapi instance and valid credentials.
+## 8. Scope and testing
+This is a restaurant presentation website, not an online ordering, payment, reservation or delivery system. Automated checks validate PHP syntax, the plugin's main data/rendering behavior, and ZIP packaging. A live WordPress/Strapi integration test still requires a running WordPress site, a Strapi instance and valid credentials.
