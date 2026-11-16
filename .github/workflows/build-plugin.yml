@@ -19,14 +19,29 @@ jobs:
           tools: zip, unzip
       - name: Check plugin PHP syntax
         run: php -l methaq-restaurant/methaq-restaurant.php
+      - name: Check child theme PHP syntax
+        run: |
+          php -l methaq-vw-restaurant/functions.php
+          php -l methaq-vw-restaurant/front-page.php
+      - name: Validate child theme parent
+        run: grep -q '^Template: vw-restaurant-lite$' methaq-vw-restaurant/style.css
       - name: Run plugin smoke tests
         run: php tests/smoke-test.php
-      - name: Build installation ZIP
+      - name: Build plugin ZIP
         run: sh scripts/package-plugin.sh
-      - name: Upload installable plugin
+      - name: Build child theme ZIP
+        run: sh scripts/package-theme.sh
+      - name: Upload plugin ZIP
         uses: actions/upload-artifact@v4
         with:
           name: methaq-restaurant-plugin
           path: dist/methaq-restaurant.zip
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload child theme ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: methaq-vw-restaurant-theme
+          path: dist/methaq-vw-restaurant.zip
           if-no-files-found: error
           retention-days: 14
