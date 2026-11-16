@@ -1,25 +1,28 @@
-=== Methaq Restaurant — Strapi Connector ===
+=== Methaq Restaurant — Display Website ===
 Contributors: methaq
-Tags: restaurant, strapi, headless, menu, rtl
+Tags: restaurant, menu, food, rtl, display
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 1.0.3
+Stable tag: 2.0.0
 License: GPLv2 or later
 
-Connects a WordPress restaurant website to Strapi and provides Arabic restaurant/menu content to the Methaq Restaurant theme.
-
-== Recommended Theme ==
-Use the Methaq Restaurant child theme, based on VW Restaurant Lite. Install and activate the VW Restaurant Lite parent theme first, then upload and activate the Methaq Restaurant child theme.
+A display-only Arabic RTL restaurant website. Stores restaurant information and menu items locally in WordPress. Does not require Strapi or an external API.
 
 == Installation ==
-1. Install VW Restaurant Lite from Appearance > Themes > Add New.
-2. Upload and activate the Methaq Restaurant child theme.
-3. Upload this plugin under Plugins > Add New > Upload Plugin.
-4. Activate the plugin. It creates Home, Menu, About and Contact pages automatically.
-5. Connect Strapi from Settings > Methaq Restaurant.
+1. Upload and activate the plugin under Plugins > Add New > Upload Plugin.
+2. The plugin creates Home, Menu, About and Contact pages automatically.
+3. Open the WordPress dashboard menu named موقع المطعم.
+4. Edit restaurant details and menu items, then save.
 
-== Shortcodes ==
-[restaurant_home]
-[restaurant_menu]
-[restaurant_info]
-[restaurant_contact]
+== Menu Item Format ==
+One item per line:
+Category | Dish name | Description | Price | Image URL
+
+The image URL is optional.
+
+== Features ==
+- Local WordPress content storage.
+- Restaurant information and contact details.
+- Menu categories, food items, prices and images.
+- Arabic RTL responsive display.
+- No ordering, payment or external CMS integration.
