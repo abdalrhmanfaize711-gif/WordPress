@@ -1,0 +1,34 @@
+name: Build Methaq Restaurant child theme
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: zip, unzip
+      - name: Check child theme PHP syntax
+        run: |
+          php -l methaq-vw-restaurant/functions.php
+          php -l methaq-vw-restaurant/front-page.php
+      - name: Validate parent theme dependency
+        run: grep -q '^Template: vw-restaurant-lite$' methaq-vw-restaurant/style.css
+      - name: Build child theme ZIP
+        run: sh scripts/package-theme.sh
+      - name: Upload child theme ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: methaq-vw-restaurant-theme
+          path: dist/methaq-vw-restaurant.zip
+          if-no-files-found: error
+          retention-days: 14
