@@ -11,7 +11,7 @@ Then upload this child theme ZIP from **Appearance → Themes → Add New → Up
 The child theme preserves the parent theme framework and customizes the brand palette, Arabic RTL presentation and homepage styles.
 
 ## Content plugin
-Install and activate the **Methaq Restaurant — Display Website** plugin. The plugin creates the restaurant pages and stores all restaurant/menu information inside WordPress. No Strapi, external CMS or API is used.
+Install and activate the **Methaq Restaurant — Display Website** plugin. The plugin creates the restaurant pages and stores all restaurant/menu information inside WordPress. No external CMS or API is used.
 
 ## Customization
 - Parent theme: VW Restaurant Lite.
