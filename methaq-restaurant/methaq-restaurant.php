@@ -148,17 +148,22 @@ final class Methaq_Restaurant_Plugin
         }
 
         $settings = $this->settings();
-        if ($settings['api_url'] !== '') {
-            return;
+        $theme_active = function_exists('get_stylesheet') && get_stylesheet() === 'methaq-vw-restaurant';
+
+        if (!$theme_active) {
+            $theme_url = admin_url('theme-install.php?search=VW%20Restaurant%20Lite');
+            echo '<div class="notice notice-warning"><p><strong>Methaq Restaurant:</strong> لتطبيق التصميم المخصص، ثبّت القالب المجاني <a href="' . esc_url($theme_url) . '">VW Restaurant Lite</a> أولاً، ثم ارفع قالب <strong>Methaq Restaurant</strong> الفرعي وفعّله.</p></div>';
         }
 
-        $home_id = (int) get_option('page_on_front');
-        $home_url = $home_id ? get_permalink($home_id) : '';
-        echo '<div class="notice notice-info"><p><strong>Methaq Restaurant:</strong> تم تجهيز صفحات المطعم تلقائيًا. ';
-        if ($home_url) {
-            echo '<a href="' . esc_url($home_url) . '" target="_blank" rel="noopener">معاينة واجهة المطعم</a>. ';
+        if ($settings['api_url'] === '') {
+            $home_id = (int) get_option('page_on_front');
+            $home_url = $home_id ? get_permalink($home_id) : '';
+            echo '<div class="notice notice-info"><p><strong>Methaq Restaurant:</strong> ';
+            if ($home_url) {
+                echo '<a href="' . esc_url($home_url) . '" target="_blank" rel="noopener">معاينة واجهة المطعم</a>. ';
+            }
+            echo 'أدخل بيانات Strapi من <a href="' . esc_url(admin_url('options-general.php?page=methaq-restaurant')) . '">إعدادات الإضافة</a> لاستبدال بيانات المعاينة ببيانات مطعمك.</p></div>';
         }
-        echo 'أدخل بيانات Strapi من <a href="' . esc_url(admin_url('options-general.php?page=methaq-restaurant')) . '">إعدادات الإضافة</a> لاستبدال بيانات المعاينة ببيانات مطعمك.</p></div>';
     }
 
     private function defaults()
