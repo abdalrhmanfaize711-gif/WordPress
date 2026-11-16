@@ -3,7 +3,7 @@
 ## 1. What the website does
 This is a display-only restaurant website. It displays a restaurant introduction, menu categories, dishes, prices, photos and contact information.
 
-It does **not** connect to Strapi or any external CMS/API. It does not include a shopping cart, online orders, booking, payment or delivery.
+It does **not** connect to an external content service or API. It does not include a shopping cart, online orders, booking, payment or delivery.
 
 All editable content is stored locally in the WordPress database.
 
