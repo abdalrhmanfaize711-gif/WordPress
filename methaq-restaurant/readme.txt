@@ -6,7 +6,7 @@ Requires PHP: 7.4
 Stable tag: 2.0.0
 License: GPLv2 or later
 
-A display-only Arabic RTL restaurant website. Stores restaurant information and menu items locally in WordPress. Does not require Strapi or an external API.
+A display-only Arabic RTL restaurant website. Stores restaurant information and menu items locally in WordPress. Does not require an external CMS or API.
 
 == Installation ==
 1. Upload and activate the plugin under Plugins > Add New > Upload Plugin.
